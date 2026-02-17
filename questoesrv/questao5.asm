@@ -1,0 +1,9 @@
+addi x1,x0,256
+addi x2,x0,-256
+addi x3,x0,8
+slli x4,x1,4
+slli x5,x2,4
+srl x6,x1,x3
+srl x7,x2,x3
+sra x8,x1,x3
+sra x9,x2,x3

@@ -27,6 +27,7 @@ Nesta anotação será falado um pouco sobre Verilog.
 - [Capítulo 4 — Estruturas de Controle](#capítulo-4---estruturas-de-controle)
 - [Capítulo 5 — Descrição de Circuitos Lógicos](#capítulo-5---descrição-de-circuitos-lógicos)
 - [Capítulo 6 — Módulos](#capítulo-6---módulos)
+- [Capítuo 7 — Exercícios](#capítulo-7---exercícios)
 
 ---
 
@@ -661,3 +662,151 @@ A declaração de um módulo parametrizado é muito semelhante a de um módulo s
     muxN #(6) mux63_1(X2, SEL2, Y2); // N=6, 64 entradas
     muxN #(N=4) mux16_1(X3, SEL3, Y3); // N=4, 16 entradas
 ```
+
+### 6.3.1 - Módulos de Instanciação Primitivos
+
+Os módulos de instanciação primitivos são módulos pré-definidos pela linguagem System Verilog, na qual apresenta todos os operadores lógicos basicos da maneira de módulos, por exemplo:
+
+```verilog
+    and and1 (S,E1,E2);
+    or or1 (S,E1,E2);
+    xor xor1 (S,E1,E2);
+    not not1 (S,E);
+```
+Desta maneira é vista que podemos utilizar módulos para operarem como portas lógicas básicas.
+
+# Capítulo 7 - Exercícios
+
+- Exercicio 1: Utilizando apenas instanciação, construa um módulo Maioria considerando: 
+
+    a) O módulo deve ter 4 portas de entrada A,B,C,X, e uma saída Y.
+
+    b) Quando a maioria dos sinais A,B e C forem verdadeiros, Y deve ter o mesmo valor de
+    X, ou zero em caso contrário.
+
+    c) Construa a tabela verdade, esboce o circuito lógico, dê nomes aos sinais internos, e
+    crie o módulo Maioria em SystemVerilog utilizando apenas instanciação de portas
+    primitivas.
+
+    d) Instancie Maioria em top, conectando às chaves e LEDs como necessário.
+
+    e) Compile, grave e teste o teste o circuito. 
+
+```verilog
+    module Maioria(
+	input A,B,C,X,
+	output Y	
+);
+
+	logic AB,BC,AC,maioria;
+
+	and and1(AB,A,B);
+	and and2(BC,B,C);
+	and and3(AC,A,C);
+	or or1(maioria,AC,BC,AB);
+	and and4(Y,maioria,X);
+	
+endmodule
+```
+
+Inicialmente foi criado o modulo Maioria, que verificaria se haveria a maioria das entradas em 1.
+
+```verilog
+    module top (
+    input  logic         CLK50,
+    input  logic [17:0]  SW,
+    input  logic  [3:0]  KEY,
+    output logic [17:0]  LEDR,
+    output logic [8:0]   LEDG,
+    output logic [6:0]   HEX [7:0]
+);
+	Maioria m1(
+		.A(SW[0]),
+		.B(SW[1]),
+		.C(SW[2]),
+		.X(SW[3]),
+		.Y(LEDR[0])
+	);
+
+endmodule
+```
+
+Logo após foi feita a instanciação do módulo Maioria no módulo pai, o módulo top.
+
+- Exercicio 2: Construir um decodificador de hexadecimal para 7 segmentos com sinal de habilitação.
+    a) O módulo deve ser chamado d7s, possuir uma entrada X com 4 bits, uma entrada EN
+    com 1 bit, e uma saída Y com 7 bits.
+    b) Quando EN estiver ativo o número da entrada deve ser mostrado no display. Quando
+    inativo o display deve apagar.
+    c) Para testar, conecte via top as chaves SW[3:0] como X, a chave SW[17] como EN,
+    e o o display HEX[0] como Y.
+
+```verilog
+module d7s(
+	input [3:0]X,
+	input EN,
+	output [6:0]Y
+);
+always_comb
+begin
+
+	if(EN)
+	begin
+		case(X)
+		4'h1:
+			Y = 7'b0110000;
+		4'h2:
+			Y = 7'b1101101;
+		4'h3:
+			Y =7'b1111001;
+		4'h4:
+			Y = 7'b0110011;
+		4'h5:
+			Y = 7'b1011011;
+		4'h6:
+			Y = 7'b0011111;
+		4'h7:
+			Y = 7'b1110000;
+		4'h8:
+			Y = 7'b1111111;
+		4'h9:
+			Y = 7'b1110011;
+		default:
+			Y = 7'b1111110;
+		endcase
+	end
+	else
+	begin
+		Y = 7'b0000000;
+	end
+end
+endmodule
+```
+
+Neste caso foi feito a parte de conversão de hexadecimal para os 7 bits do display de 7 segmentos.
+
+> **Importante:** É importante frizar que sempre que vc alterar uma variável no IF, quando for uma estrutura de always_comb, sempre tera que atribuir um valor a essa variável, mesmo que seja no else.
+
+```verilog
+module top (
+    input  logic         CLK50,
+    input  logic [17:0]  SW,
+    input  logic  [3:0]  KEY,
+    output logic [17:0]  LEDR,
+    output logic [8:0]   LEDG,
+    output logic [6:0]   HEX [7:0]
+);
+
+d7s display(
+	.X(SW[3:0]),
+	.EN(SW[4]),
+	.Y(HEX[0])
+);
+
+endmodule
+
+```
+
+Representação do aquivo pai.
+
+Exercicio 3:
