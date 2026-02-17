@@ -148,3 +148,24 @@ O li (Load Immediate) é uma pseudo instrução, na qual carrega o numero semelh
 ```assembly
     li x1,0x12345123
 ``` 
+
+## 2.2 - Loads and Stores
+
+Loads and Stores são as memórias, nem sempre será possivel apenas usar o registrador, as vezes nessecitamos fazer uso de memórias para completar todo o processo.
+
+### 2.2.1 - Loads 
+
+Nos loads temos diferentes tipos de maneira de leitura, são elas: words(32bits) half-words(16bits) e Byte (8bits). A lógica do load é pegar um valor da memória e adicionar num registrador.
+
+```assembly
+    lw x1,0(x3) #implica dizer que irei pegar os 4 primeiros bits do x3 e adcionar no registador x1
+    lw 
+```
+### 2.2.2 - Stores
+
+No store temos diferentes tipos de armazenamento, semelhante ao load, são elas: words(32bits), half-word(16bits) e byte(8bits). A lógica do store é receber o valor do registrador e adicionar na memória.
+
+```assembly
+    sw x1, x(x2)
+    sw valor_que_quer_gravar,offset(endereço_que_vai_gravar)
+```
